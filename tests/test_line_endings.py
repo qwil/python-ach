@@ -20,6 +20,7 @@ class TestLineEndings(object):
                 'type'           : '22', # type of
                 'routing_number' : '12345678',
                 'account_number' : '11232132',
+                'id_number'      : '123456789ABCDEFGH',
                 'amount'         : '10.00',
                 'name'           : 'Alice Wanderdust',
                 'addenda' : [
@@ -32,6 +33,7 @@ class TestLineEndings(object):
                 'type'           : '27',
                 'routing_number' : '12345678',
                 'account_number' : '234234234',
+                'id_number'      : '123456',
                 'amount'         : '150.00',
                 'name'           : 'Billy Holiday',
             },

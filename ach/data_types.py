@@ -1,5 +1,5 @@
+import logging
 import math
-import re
 import string
 from datetime import datetime
 
@@ -7,6 +7,8 @@ from datetime import datetime
 Collection of classes that comprise the row type objects
 in a nacha file
 """
+
+_log = logging.getLogger(__name__)
 
 
 class AchError(Exception):
@@ -60,6 +62,8 @@ class Ach(object):
         field: (str)
         length: (int)
         """
+        _log.debug('Validating alphanumeric field input "%s", max length %s', field, length)
+
         # Convert to a byte string of ordinal values.
         bytes_ = field.encode('ascii')
         if len(field) > length:

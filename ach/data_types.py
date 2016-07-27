@@ -1,5 +1,5 @@
+import logging
 import math
-import re
 import string
 from datetime import datetime
 
@@ -7,6 +7,8 @@ from datetime import datetime
 Collection of classes that comprise the row type objects
 in a nacha file
 """
+
+_log = logging.getLogger(__name__)
 
 
 class AchError(Exception):
@@ -60,20 +62,23 @@ class Ach(object):
         field: (str)
         length: (int)
         """
-        str_length = str(length)
+        _log.debug('Validating alphanumeric field input "%s", max length %s', field, length)
 
-        match = re.match(r'([\w,\s]{1,' + str_length + '})', field)
+        # Convert to a byte string of ordinal values.
+        try:
+            bytes_ = field.encode('ascii')
+        except UnicodeEncodeError as e:
+            # Reraise as AchError to maintain a predictable external Exception API.
+            raise AchError(e)
+        if len(field) > length:
+            raise AchError('Field %s contains too many characters (%s). Max length is %s.', field, len(field), length)
+        for ord_ in bytes_:
+            if ord_ <= 31:
+                raise AchError('Character "%s" is invalid in an alphanumberic field.', chr(ord_))
+        # Now that we've validated, convert back to a string and right-pad.
+        output = bytes_.decode('ascii').upper() + self.make_space(length - len(field))
 
-        if match:
-            if len(match.group(1)) < length:
-                field = match.group(1) + self.make_space(
-                    length - len(match.group(1)))
-            else:
-                field = match.group(1)
-        else:
-            raise AchError("field does not match alpha numeric criteria")
-
-        return field.upper()
+        return output
 
     def validate_numeric_field(self, field, length):
         """
